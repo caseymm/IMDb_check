@@ -9,9 +9,10 @@
 </head>
 
 <script>
+var two_actors = [];
 function sendRequest(actor) {
 	var params = "name=" + actor + "&format=JSONP&filmography=1&limit=1&uniqueName=1";
-
+	var film_list = [];
 	$.ajax({
 			data: params,
 			url: 'http://www.myapifilms.com/imdb?',
@@ -26,19 +27,23 @@ function sendRequest(actor) {
 					//gets mini dict of different types of entries they've had
 					var role_type = element.filmographies;
 					$.each(role_type, function(index, role_array){
-						if ($.trim(role_array.section) == 'Actor') {
+						var section = role_array.section;
+						if ($.trim(section) == 'Actor') {
 							// only returns entries for the 'Actor' mini dict
 							var films = role_array.filmography;
+							two_actors.push(films);
 							// console.log(films);
-							return films;
-							// $.each(role_array.filmography, function(index, appearance){
-							// 	actor.push(appearance);
-							// })
+							$.each(films, function(index, appearance){
+								film_list.push(appearance);
+							})
 						}
-						else if($.trim(role_array.section) == 'Actress'){
+						else if($.trim(section) == 'Actress'){
 							var films = role_array.filmography;
+							two_actors.push(films);
 							// console.log(films);
-							return films;
+							$.each(films, function(index, appearance){
+								film_list.push(appearance);
+							})
 						}
 					});
 				}
@@ -49,7 +54,9 @@ function sendRequest(actor) {
 			$("#error").text(textStatus + "; " + errorThrown);
 		}
 	});
-
+	console.log(two_actors);
+	// return film_list;
+	// console.log(film_list);
 	}
 
 function compareActors() {
@@ -58,12 +65,19 @@ function compareActors() {
 	sendRequest(actorA);
 	sendRequest(actorB);
 
-	$(sendRequest(actorA)).promise().done(function() {
-    	var actorA_dict = this;
-		console.log(actorA_dict);
-  	});
+	// $(sendRequest(actorA)).promise().done(function() {
+    // 	// var actorA_dict = this;
+	// 	// console.log(actorA_dict);
+ //  	});
+	// $(sendRequest(actorB)).promise().done(function() {
+	//
+	// });
 
 }
+
+$(compareActors()).promise().done(function() {
+	console.log(two_actors);
+});
 </script>
 
 <body>
