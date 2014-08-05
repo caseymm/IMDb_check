@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<title>IMDb Cross Reference</title>
+</head>
+
+<script>
+function sendRequest(actor) {
+	var params = "name=" + actor + "&format=JSONP&filmography=1&limit=1&uniqueName=1";
+
+	$.ajax({
+			data: params,
+			url: 'http://www.myapifilms.com/imdb?',
+			type: 'get',
+			dataType: 'jsonp',
+			beforeSend: function () {},
+			success:  function (response, textStatus, jqXHR) {
+
+			$.each(response, function(index, element){
+				//prints the entire dict for the actor
+				if (element.filmographies != undefined) {
+					//gets mini dict of different types of entries they've had
+					var role_type = element.filmographies;
+					$.each(role_type, function(index, role_array){
+						if ($.trim(role_array.section) == 'Actor') {
+							// only returns entries for the 'Actor' mini dict
+							var films = role_array.filmography;
+							// console.log(films);
+							return films;
+							// $.each(role_array.filmography, function(index, appearance){
+							// 	actor.push(appearance);
+							// })
+						}
+						else if($.trim(role_array.section) == 'Actress'){
+							var films = role_array.filmography;
+							// console.log(films);
+							return films;
+						}
+					});
+				}
+			});
+
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$("#error").text(textStatus + "; " + errorThrown);
+		}
+	});
+
+	}
+
+function compareActors() {
+	var actorA = $("#actorA").val();
+	var actorB = $("#actorB").val();
+	sendRequest(actorA);
+	sendRequest(actorB);
+
+	$(sendRequest(actorA)).promise().done(function() {
+    	var actorA_dict = this;
+		console.log(actorA_dict);
+  	});
+
+}
+</script>
+
+<body>
+
+	Actor A: <input type="text" id="actorA" value="Harrison Ford" />
+	Actor B: <input type="text" id="actorB" value="Carrie Fisher" />
+	<button onclick="compareActors();">Send</button>
+
+	<br />
+	<div id="error"></div>
+	<br />
+	<b>Countries</b>:
+	<div id="countries" style="margin-left: 20px;"></div>
+	<br />
+	<b>Actors</b>:
+	<div id="actors" style="margin-left: 20px;"></div>
+
+</body>
+
+</html>
