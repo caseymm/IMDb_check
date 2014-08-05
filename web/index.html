@@ -10,9 +10,9 @@
 
 <script>
 var two_actors = [];
-function sendRequest(actor) {
+function sendRequest(actor, actor2) {
 	var params = "name=" + actor + "&format=JSONP&filmography=1&limit=1&uniqueName=1";
-	var film_list = [];
+	var get_actor = actor2 + "_div"
 	$.ajax({
 			data: params,
 			url: 'http://www.myapifilms.com/imdb?',
@@ -31,18 +31,16 @@ function sendRequest(actor) {
 						if ($.trim(section) == 'Actor') {
 							// only returns entries for the 'Actor' mini dict
 							var films = role_array.filmography;
-							two_actors.push(films);
-							// console.log(films);
+
 							$.each(films, function(index, appearance){
-								film_list.push(appearance);
+								$('#'+get_actor).append(appearance.title+' ('+appearance.year+' )<br>');
 							})
 						}
 						else if($.trim(section) == 'Actress'){
 							var films = role_array.filmography;
-							two_actors.push(films);
-							// console.log(films);
+
 							$.each(films, function(index, appearance){
-								film_list.push(appearance);
+								$('#'+get_actor).append(appearance.title+' ('+appearance.year+' )<br>');
 							})
 						}
 					});
@@ -54,30 +52,19 @@ function sendRequest(actor) {
 			$("#error").text(textStatus + "; " + errorThrown);
 		}
 	});
-	console.log(two_actors);
-	// return film_list;
-	// console.log(film_list);
-	}
+};
 
 function compareActors() {
 	var actorA = $("#actorA").val();
+	var actorA2 = $("#actorA").val().replace(/ /g,'');
 	var actorB = $("#actorB").val();
-	sendRequest(actorA);
-	sendRequest(actorB);
+	var actorB2 = $("#actorB").val().replace(/ /g,'');
+	$('#actorA_info').append('<div id='+actorA2+'_div></div>')
+	$('#actorB_info').append('<div id='+actorB2+'_div></div>')
+	sendRequest(actorA, actorA2);
+	sendRequest(actorB, actorB2);
 
-	// $(sendRequest(actorA)).promise().done(function() {
-    // 	// var actorA_dict = this;
-	// 	// console.log(actorA_dict);
- //  	});
-	// $(sendRequest(actorB)).promise().done(function() {
-	//
-	// });
-
-}
-
-$(compareActors()).promise().done(function() {
-	console.log(two_actors);
-});
+};
 </script>
 
 <body>
@@ -89,11 +76,14 @@ $(compareActors()).promise().done(function() {
 	<br />
 	<div id="error"></div>
 	<br />
-	<b>Countries</b>:
-	<div id="countries" style="margin-left: 20px;"></div>
+	<b>Compare</b>:
+	<div id="crossref"></div>
 	<br />
-	<b>Actors</b>:
-	<div id="actors" style="margin-left: 20px;"></div>
+	<b>Actor A</b>:
+	<div id="actorA_info"></div>
+	<br />
+	<b>Actor B</b>:
+	<div id="actorB_info"></div>
 
 </body>
 
