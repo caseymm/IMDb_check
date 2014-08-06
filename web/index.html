@@ -13,7 +13,7 @@ var two_actors = [];
 function sendRequest(actor, actor2) {
 	var params = "name=" + actor + "&format=JSONP&filmography=1&limit=1&uniqueName=1";
 	var get_actor = actor2 + "_div"
-	$.ajax({
+	return $.ajax({
 			data: params,
 			url: 'http://www.myapifilms.com/imdb?',
 			type: 'get',
@@ -57,12 +57,25 @@ function sendRequest(actor, actor2) {
 function compareActors() {
 	var actorA = $("#actorA").val();
 	var actorA2 = $("#actorA").val().replace(/ /g,'');
+	var actorA_div = $('#'+actorA2+'_div');
 	var actorB = $("#actorB").val();
 	var actorB2 = $("#actorB").val().replace(/ /g,'');
-	$('#actorA_info').append('<div id='+actorA2+'_div></div>')
-	$('#actorB_info').append('<div id='+actorB2+'_div></div>')
-	sendRequest(actorA, actorA2);
-	sendRequest(actorB, actorB2);
+	var actorB_div = $('#'+actorB2+'_div');
+	$('#actorA_info').append('<div id='+actorA2+'_div></div>');
+	$('#actorB_info').append('<div id='+actorB2+'_div></div>');
+	//Have these wait:
+	//Add +1 for each - when value == 2, then execute function crossref
+	sendRequest(actorA, actorA2).done(
+		sendRequest(actorB, actorB2).done(
+			// function(actorA_div, actorB_div) {
+			// 	console.log(actorB_div);
+			// 	$.each(actorA_div, function(index, entry){
+			// 		console.log(entry);
+			//
+			// 	})
+			// }
+		)
+	);
 
 };
 </script>
